@@ -1,4 +1,12 @@
 package io.spring.image.demo.controller;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import java.util.List;
+@RestController
+@RequestMapping("/upload")
+@Slf4j
 
 public class ImageController {
     //*
@@ -9,8 +17,8 @@ public class ImageController {
     //*
 
     @PostMapping
-    public ResponseEntity uploadImage(@RequestParam("file")  MultipartFile file,
-                                      @RequestParam("name")String name,
+    public ResponseEntity uploadImage(@RequestParam("file") MultipartFile file,
+                                      @RequestParam("name") String name,
                                       @RequestParam("tags") List<String> tags
     ) {
         log.info("Recebendo tentativa de upload do arquivo: {}", file.getOriginalFilename());
