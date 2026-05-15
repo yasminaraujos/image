@@ -3,3 +3,4 @@ spring:
     url: jdbc:postgresql://localhost:5432/imagelite
     username: postgres
     password: postgres
+#rodar no banco
