@@ -9,8 +9,7 @@ import java.util.Optional;
 
 public interface ImageService {
     //salva imagem
-    Image save (Image image);
-
+    Image save(Image image);
     //retorna imagem
     Optional<Image> getById(String id);
 

@@ -10,14 +10,35 @@ import org.springframework.util.StringUtils;
 import java.util.List;
 
 public interface ImageRepository extends JpaRepository<Image, String>, JpaSpecificationExecutor<Image> {
+
+    /**
+     *
+     * @param extension
+     * @param query
+     * @return
+     *
+     * SELECT * FROM IMAGE WHERE 1 = 1 AND EXTENSION = 'PNG' AND (NAME LIKE 'QUERY' OR TAGS LIKE 'QUERY')
+     *
+     */
+
     default List<Image> findByExtensionAndNameOrTagsLike(ImageExtension extension, String query){
-        Specification<Image> specification = Specification.where(conjunction());
+        Specification <Image> conjunction = (root, q, criteriaBuilder) ->criteriaBuilder.conjunction();
+        Specification<Image> spec = Specification.where(conjunction);
         if(extension !=null){
-            specification = specification.and(extensionEquals(extension));
+            //AND EXTENSION = 'PNG'
+            Specification<Image> extensionEqual = (root, q, cb) -> cb.equal(root.get("extension"), extension);
+            spec = spec.and(extensionEqual);
         }
         if(StringUtils.hasText(query)){
-            specification = specification.and(anyOf(nameLike(query), tagsLike(query)));
+            //AND (NAME LIKE 'QUERY' OR TAGS LIKE 'QUERY')
+            //Specification<Image> nameLike = (root, q, cb)-> {};
+            //Specification<Image> tagsLike = (root, q, cb)-> {};
+            Specification<Image> nameLike = (root, q, cb)-> cb.like(cb.upper(root.get("name")),"%"+query.toUpperCase()+"%");
+            Specification<Image> tagsLike = (root, q, cb)-> cb.like(cb.upper(root.get("tags")),"%"+query.toUpperCase()+"%");
+
+            Specification<Image> nameOrTagsLike = Specification.anyOf(nameLike, tagsLike);
+            spec = spec.and(nameOrTagsLike);
         }
-        return findAll(specification);
+        return findAll(spec);
     }
 }
